@@ -4,7 +4,7 @@ function tenedorLoop
 close all;
 
 %tenedor(alpha, delta,nu,tau,gr,BU,psi,ph)
-gr=100; % FRAN ACÁ LO TENES QUE CAMBIAR A MANO (pone 400 por ejemplo, es el tamaño de la grilla).
+gr=500; % FRAN ACÁ LO TENES QUE CAMBIAR A MANO (pone 400 por ejemplo, es el tamaño de la grilla).
 delta1=0.01;
 delta2=0.9;
 deltagrid = linspace(delta1,delta2,10);
@@ -164,8 +164,8 @@ end
 
 [max_num1,max_idx1] = max(OF2(:));
 [B02OPT B01OPT]=ind2sub(size(OF2),max_idx1);
-BOPTFINAL(2,q)=B(1,B02OPT)
-BOPTFINAL(1,q)=B(1,B01OPT)
+BOPTFINAL(2,q)=B(1,B02OPT);
+BOPTFINAL(1,q)=B(1,B01OPT);
 end
 save('tenedorLoop.mat','BOPTFINAL')
 end
