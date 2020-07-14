@@ -2,76 +2,20 @@ using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, Lin
 
 using ORCA
 
+include("type_def.jl")
 include("reporting_routines.jl")
-
-mutable struct DebtMat{K}
-	pars::Dict{Symbol, Number}
-
-	gr::Dict{Symbol, Vector{Float64}}
-	grlong::Dict{Symbol, Vector{Int64}}
-
-	agg::Dict{Symbol,Array{Float64,K}}
-
-	P::Matrix{Float64}
-
-	ϕ::Dict{Symbol,Array{Float64,K}}
-
-	vf::Array{Float64,K}
-end
-
-function DebtMat(;
-	β = 0.96,
-	γ = 0.9,
-	ψ = 1/3.3,
-	Nb = 6,
-	Nd = 6,
-	Nθ = 7,
-	ρθ = 0.7,
-	σθ = 0.01,
-	τ = 0.3,
-	)
-
-	# ψ > 1-τ || throw(error("ψ too low, should be at least (1-τ) = $(1-τ)")) 
-
-	r_star = 1/β - 1
-	ρ = 0.2 # Target average maturity of 7 years: ~0.05 at quarterly freq
-	κ = ρ + r_star
-	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ, :τ=>τ)
-
-	bgrid = range(-0.5,2,length=Nb)
-	dgrid = range(-0.5,2,length=Nd)
-
-	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
-	θgrid = mc.state_values .+ 0.1
-	P = mc.p
-
-	gr = Dict(:b => bgrid, :d => dgrid, :θ => θgrid)
-	Jgrid = gridmake(1:Nb, 1:Nd, 1:Nθ)
-	grlong = Dict(
-		:b=>[Jgrid[js,1] for js in 1:size(Jgrid,1)],
-		:d=>[Jgrid[js,2] for js in 1:size(Jgrid,1)],
-		:θ=>[Jgrid[js,3] for js in 1:size(Jgrid,1)],
-	)
-
-	agg = Dict([sym => ones(Nb, Nd, Nθ) for sym in [:b′, :d′, :Uc, :qb, :qd]])
-
-	ϕ = Dict([sym => ones(Nb, Nd, Nθ)*0.2 for sym in [:c, :n, :b, :d, :τ, :g]])
-	vf = zeros(Nb, Nd, Nθ)
-
-	K = length(gr)
-	return DebtMat{K}(pars, gr, grlong, agg, P, ϕ, vf)
-end
+include("simul.jl")
 
 w(dd::DebtMat, gc) = w(gc,dd.pars[:γ])
 function w(gc,γ)
 	u = 0.0
 	gmin = 1e-8
-	if gc < gmin
-		return w(gmin,γ) + (gc-gmin) * (gmin)^-γ
-	end
+	# if gc < gmin
+	# 	return w(gmin,γ) + (gc-gmin) * (gmin)^-γ
+	# end
 	if γ != 1
-		# u = 1*gc
-		u = (gc.^(1-γ))./(1-γ)
+		u = 1*gc
+		# u = (gc.^(1-γ))./(1-γ)
 	else
 		u = log.(gc)
 	end
@@ -204,7 +148,7 @@ function budget_constraint(dd::DebtMat, cv, bpv, dpv, τv, state, pθ, itp_U, it
 	gv = resource_constraint_g(dd, cv, nv)
 	# gv = max(0, gv)
 
-	Ucv = max(1e-10,cv)^(-γ)
+	Ucv = max(1e-6,cv)^(-γ)
 	qbv, qdv = debt_price(dd, bpv, dpv, pθ, itp_U, itp_qd, Ucv)
 
 	LHS = gv + bv + κ * dv
@@ -215,13 +159,13 @@ function budget_constraint(dd::DebtMat, cv, bpv, dpv, τv, state, pθ, itp_U, it
 end
 
 function budget_surplus(dd::DebtMat, cv, bpv, dpv, τv, state, pθ, itp_U, itp_qd)
-	LHS, RHS, cv, nv, gv, qbv, qdv = budget_constraint(dd, cv, bpv, dpv, τv, state, pθ, itp_U, itp_qd)
+	LHS, RHS, _, _, _, _, _ = budget_constraint(dd, cv, bpv, dpv, τv, state, pθ, itp_U, itp_qd)
 
 	return RHS - LHS
 end
 
 function eval_vf(dd::DebtMat, τv, bpv, dpv, state, pθ, itp_U, itp_qd, itp_v)
-	β, ψ, τ, γ = [dd.pars[sym] for sym in [:β, :ψ, :τ, :γ]]
+	β, ψ, γ = [dd.pars[sym] for sym in [:β, :ψ, :γ]]
 	θv = state[:θ]
 
 	max_c = 1.0
