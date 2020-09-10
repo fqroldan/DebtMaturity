@@ -1,0 +1,421 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[american]{babel}
+\usepackage{amssymb,amsfonts,amsmath,amsthm,amscd,verbatim,latexsym,xspace,mathtools,array,mathtools}
+\usepackage{natbib}
+\bibliographystyle{ecta}
+
+\linespread{1.35} % Line spacing - Palatino needs more space between lines
+
+\usepackage{ifxetex}
+\ifxetex
+    \usepackage[math]{mathspec}
+    \setmainfont[Numbers=OldStyle]{Linux Libertine}
+    \setmathsfont(Latin,Digits){Linux Libertine}
+\else
+    \usepackage[osf]{mathpazo}
+    \usepackage{palatino}
+\fi
+
+\usepackage{mathabx}
+
+\usepackage{booktabs}
+\usepackage{datetime}
+\usepackage{bbm} %for the sweet indicator function
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{enumerate}
+\usepackage{graphicx}
+\usepackage{etoolbox}
+\usepackage{makeidx}
+\usepackage[left=2.65cm,right=2.65cm,top=1in,bottom=1in,nomarginpar,bindingoffset=0cm,centering]{geometry}
+%\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+\usepackage{colortbl}
+\definecolor{mDarkTeal}{HTML}{23373b}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup[table]{labelfont=sc,textfont=sc}
+\captionsetup[figure]{labelfont=sc,textfont=sc}
+\usepackage[pdfstartview=FitH]{hyperref}
+\hypersetup{
+    colorlinks	= true,
+    linkcolor	= blue!75!black,
+    urlcolor	= blue!75!black,
+    citecolor 	= blue!75!black
+}
+
+
+\usepackage{titlesec} % Allows customization of titles
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{\thepage} % Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{10pt} % Customize the height of the header
+
+\newcommand{\I}[1]{{\bf 1}_{#1}} %Indicator function
+\newcommand{\Ar}[1]{\begin{array}{c} #1 \end{array}} %array
+\newcommand{\comentario}[1]{\textsc{#1}}
+%\def\L{\mathcal{L}}
+\def\bP{\mathbb{P}} %Probability BM
+\def\Nj{\mathcal{N}} %Number of jumps
+\def\R{\mathbb{R}}
+\def\N{\mathbb{N}}
+\def\L{\mathcal{L}} %Generator
+\def\wg{\succ} %weird greater
+\def\jarrow{\curvearrowright} %jump arrow
+\newcommand{\E}[1]{E\left[#1\right]} %expectation
+% \newcommand{\C}[1]{\middle| #1 }
+\let\oldsum\sum
+\renewcommand{\sum}{\displaystyle\oldsum} %sumas como la gente
+\def\flecha{\xrightarrow} %arrow with thext [below]{on top}
+
+%Enviroments
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{claim}[theorem]{Claim}
+
+\date{\monthname\xspace \the\year}
+\title{Uncertainty and Maturity Structure\thanks{The views expressed herein are my own and should not be attributed to the IMF, its Executive Board, or its management.}}
+\author{Damián Pierri \\ IIEP-BAIRES and UdeSA \and Francisco Roldán\\ IMF}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+To be completed.
+
+\section{An Illustrative Example}
+
+In order to illustrate the relevance of uncertainty and private savings in the optimal maturity structure of government debt we begin with the standard framework in \citet*{Debortoli}. Assume that there are three $t=0,1,2$ periods and the representative agent has preferences over consumption, leisure and expenditure; which are separable. In particular, $U(c_t,n_t,g_t)\equiv ln(c_t)+v(n_t)+\theta_t g_t$, where $v$ is decreasing, differentiable and convex. Note that preferences are quasiliear and public expenditure is the linear good; a fact which implies that in some cases it may take negative values.
+
+ \bigskip
+
+Uncertainty only affects the preferece parameter associated with the utility value of Government services, $\theta$. In particular, in $t=0$, $\theta_0$ is given with certainty or equivalently decisions are taken after the realization of uncertainty. In $t=1$ there are 2 possible states, $\theta_1^H, \theta_1^L$, where the first happens with probability $\pi$ and $\theta_1^H=1+\delta, \theta_1^L=1-\delta$ with $\delta>0$ . In period $t=2$ there is no uncertainty but a certain degree of inertia, parametrized by $1>\alpha > 0.5$. In particular, $\theta_2=\alpha \theta_1^H+ (1-\alpha) \theta_1^L$ if $\theta_1=\theta_1^H$ and  $\theta_2=\alpha \theta_1^L+ (1-\alpha) \theta_1^H$ if $\theta_1=\theta_1^L$. In words, good or bad luck persists as $\alpha>0.5$.
+
+\bigskip
+
+Flow budget constraints are standard. The agent is assumed to save / borrow in bonds of different maturities $b_t^{t+k}$ paying prices $q_t^{t+k}$. She can also re-balance her portfolio in every period. In particular, net borrowing / savings equals $q_t^{t+k}(b_t^{t+k}-b_{t-1}^{t+k})$. As we are allowing for the existence of non-zero intial wealth, we let $b_{-1}^{1},b_{-1}^{2}$ to be different from zero while for analytical tractability $b_{-1}^{0}=0$.  Thus, in general, the budget constraint takes the form:
+
+\bigskip
+
+\begin{equation}
+\label{gbc}
+c_t+\sum_k q_t^{t+k}(b_t^{t+k}-b_{t-1}^{t+k})=(1-\tau_t)n_t+b_{t-1}^{t}
+\end{equation}
+
+\bigskip
+
+As $t=0,1,2$, only $b_0^{1},b_0^{2},b_1^{2}$ can be chosen to be different from zero. Moreover, there are $5$ distinct equations \eqref{gbc} as $\tau$ is allowed to vary along with $\theta$. We can now characterize the problem of the household. The derivative with respect to labor and assets yields:
+
+\bigskip
+
+\begin{equation}
+\label{foc1}
+1-\tau(s^t)=-v'(n_t(s^t))c_t(s^t)
+\end{equation}
+
+\begin{equation}
+\label{foc2}
+\frac{q_t^{t+k}(s^t)}{c_t(s^t)}= \sum_{s^{t+k}_t}\frac{\pi\left(s^{t+k}\mid s^{t}  \right)}{c_{t+k}(s^{t+k})}
+\end{equation}
+
+\bigskip
+
+Where equation \eqref{foc2} reduces to: $q_0^1=c_0E_0(1/c_1),q_0^2=c_0E_0(1/c_2),q_1^{2,h}=c^{h}_1/c^{h}_2$, with $h=L,H$. In order to derive an optimal Goverment policy, we need to derive an implementability condition. Thus, we must characterize optimality and feasibilty in order to constraint the Government's choices. Replacing equations \eqref{foc1} and \eqref{foc2} into \eqref{gbc} iteratively, we get:
+
+\bigskip
+
+\begin{equation}
+\label{ic2}
+\frac{c^{h}_2-(1-\tau_2^{h})n_2^{h}}{c^{h}_2}=\frac{b^{2,h}_1}{c^{h}_2}
+\end{equation}
+
+\begin{equation}
+\label{ic1}
+\frac{c^{h}_1-(1-\tau_1^{h})n_1^{h}-b^1_{-1}}{c^{h}_1}+\frac{c^{h}_2-(1-\tau_2^{h})n_2^{h}-b^2_{-1}}{c^{h}_2}=\frac{b^{1}_0-b^1_{-1}}{c^{h}_1}+\frac{b^{2}_0-b^2_{-1}}{c^{h}_2}
+\end{equation}
+
+\begin{equation}
+\label{ic0}
+\frac{c_0-(1-\tau_0)n_0}{c_0}+E_0\left\{ \frac{c_1-(1-\tau_1)n_1-b^1_{-1}}{c_1}+\frac{c_2-(1-\tau_2)n_2-b^2_{-1}}{c_2} \right\}=0
+\end{equation}
+
+\bigskip
+Now we turn to the behavior of the Government. It will be assumed that the policimaker is benevolent and can choose taxes, expenditure and the maturity structure of debt $\left\{ \tau_t,g_t,\left\{ B_t^{t+k} \right\} \right\}$ subject flow budget and resourse constraints:
+
+\bigskip
+
+\begin{equation}
+\label{govbc}
+g_t+B_{t-1}^{t}= \tau_tn_t+\sum_k q_t^{t+k}(B_t^{t+k}-B_{t-1}^{t+k})
+\end{equation}
+
+\begin{equation}
+\label{rc}
+n_t=c_t+g_t
+\end{equation}
+
+\bigskip
+
+Note that $B>0$ is a net liability for the Goverment (i.e. the policimaker is selling bonds) while $b>0$ is a net asset for the household (i.e. she is purchasing the bonds). Thus, feasibility in the asset market will be simply $B_t^{t+k}=b_t^{t+k}$ for $t=-1,0,1$ and $k=1,2,3$ and the usual transversality condition applies (i.e. $B_1^{3}=0$). We now turn to define all the relevant equilibrium notions.
+
+\bigskip
+
+\subsection*{Definitions}
+
+\bigskip
+
+\textit{Sequential competitive equilibrium (SCE)}. A SCE is a series of functions $\left\{ c,b,B,\tau,n,g \right\}$, $\left\{ q \right\}$ such that:
+
+\bigskip
+
+\begin{itemize}
+  \item Given $\left\{ q,g, \tau \right\}$, the representative agent solves: $Max_{\left\{ c,n,b \right\}} \ \sum_{0}^{2}U(c_t,n_t,g_t)$ subject to equations \eqref{gbc}. That is, equations \eqref{foc1} and \eqref{foc2} hold.
+  \item Given $\left\{ q,g, \tau, B \right\}$ equations  \eqref{govbc} hold.
+  \item Markets clear. That is, equations  \eqref{rc} hold and $B_t^{t+k}=b_t^{t+k}$ for $t=-1,0,1$ and $k=1,2,3$.
+\end{itemize}
+
+\bigskip
+
+\textit{Optimal Government Policy with Commitment (GPWC)} Assume a path of taxes and output, $\left\{ n,\tau \right\}$. A GPWC  is a series of functions $\left\{ c,b,B,g \right\}$, $\left\{ q \right\}$ such that:
+
+\bigskip
+
+\begin{itemize}
+  \item Given $\left\{ n,\tau \right\}$, the Goverment solves: $Max_{\left\{ c,g \right\}} \ \sum_{0}^{2}U(c_t,g_t)$ subject to equations \eqref{ic0} and \eqref{rc}
+  \item In order to solve for $\left\{ q,B  \right\}$, we require that equations \eqref{foc2}, \eqref{ic2} and \eqref{ic1} hold.
+\end{itemize}
+
+\bigskip
+
+Note that it is possible to solve for $ \left\{ n,\tau \right\}$ if we let the Governemt choose $\left\{ \tau \right\}$ and use equation \eqref{foc1}. For expositional purposes we let this generalization for the next section.
+
+\bigskip
+
+\textit{Optimal Government Policy without Commitment (GPWOC)} Assume a path of taxes and output, $\left\{ n,\tau \right\}$. A GPWOC  is a series of functions $\left\{ c,b,B,g \right\}$, $\left\{ q \right\}$ such that:
+
+\bigskip
+
+\begin{itemize}
+  \item Given $\left\{ B_1^2 \right\}$, the Goverment solves: $Max_{\left\{ c_2,g_2 \right\}} \ U(c_2,g_2)$ subject to equations \eqref{ic2} and \eqref{rc}
+  \item Given $\left\{ c_2(B_1^2), g_2(B_1^2), \right\}$, the Goverment solves: $Max_{\left\{ c_1,g_1,B_1^2 \right\}} \ \sum_{1}^{2}U(c_t,g_t)$ subject to equations \eqref{ic1} and \eqref{rc}
+   \item Given $\left\{ c_1(B_0^1,B_0^2), g_1(B_0^1,B_0^2), c_2(B_0^1,B_0^2),g_2(B_0^1,B_0^2) \right\}$, the Goverment solves: \\
+   $Max_{\left\{ c_0,g_0,B_0^1,B_0^2 \right\}} \ \sum_{0}^{2}U(c_t,g_t)$ subject to equations \eqref{ic0} and \eqref{rc}
+    \item In order to solve for $\left\{ q  \right\}$, we require that equation \eqref{foc2} holds.
+\end{itemize}
+
+\bigskip
+
+
+\subsection*{The problem with and without Commitment}
+
+We will begin with the solution for consumption in the GPWC as it will be useful to understand the effects of uncertainty on the maturity structure of Government debt for different welfare weigths $\psi$. The value of consumption under full commitment since Angeletos (02) is equivalent to the solution with complete markets. Thus, these values can be used as a benchmark in order to measure the cost of lack of insurance. Moreover, as the same values represent the solution with commitment, they are useful to compute the cost of lack of commitment. Note that if $\psi=1$, the effects of uncertainty on consumption does not affect the objective function of the Government. Thus, \textit{the weight of deviations from full insurance for the Governmet will be small}. This will not be the case for deviations from the solution with commitment, which is associated with expost changes in Goverment expenditure and thus with the interest rate.
+
+\bigskip
+
+
+
+We now continue with the limited commitment framework in Debortoli, et. el. (2017). The Government decides sequentilly taking as a restriction the optimality conditions from the household problem, its budget constraint and the feasibility restriction. There are 3 periods, $t=0,1,2$, and the Goverment has to choose the private consumption level $c$, public expenditure, $g$ and the maturity structure, $B$. The problem at t=2 i given by:
+
+\bigskip
+
+\begin{center}
+
+$Max \ \psi(\theta _2g_2)+ (1-\psi)ln(c_2)$
+
+\end{center}
+
+\bigskip
+
+Subject to
+
+\begin{center}
+
+$a.2) \ \  \eta=g_2+c_2  $
+
+\end{center}
+
+\bigskip
+
+
+\begin{center}
+
+$ b.2) \ \  g_2+\overline{B}^{2}_{1}=\tau \eta  $
+
+\end{center}
+
+\bigskip
+
+As debt is assumed to be given at the time of solving the problem, $\overline{B}^{2}_{1}$, equations a.2) and b.2) completely determines endogenous variables sequentially. Now we turn to the problem at $t=1$.
+
+\bigskip
+
+
+\begin{center}
+
+$Max \ \psi(\theta _1g_1)+ (1-\psi)ln(c_1)+ \beta(\psi(\theta _2g_2\left ( B^{2}_{1} \right ))+ (1-\psi)ln(c_2\left ( B^{2}_{1} \right )))$
+
+\end{center}
+
+\bigskip
+
+Subject to
+
+\begin{equation*}
+ a.1) \ \  \eta=g_1+c_1
+\end{equation*}
+
+
+\bigskip
+
+\begin{equation*}
+ b.1) \ \ \frac{\overline{B}^{1}_{0}}{c_1}+\frac{\overline{B}^{2}_{0}}{c_2}=\frac{c_1+\eta (1-\tau )}{c_1}+\frac{c_2+\eta (1-\tau )}{c_2}
+\end{equation*}
+
+
+\bigskip
+
+Where $c_2\left ( B^{2}_{1} \right )$ is the policy function from the problem at $t=2$. By solving for $g_1$ in equation a.1) and for $c_1$ in equation b.1) we can write the problem with only 1 control variable, $B^{2}_{1}$, and no constraints. The problem at $t=0$ is:
+
+\bigskip
+
+\begin{equation*}
+\begin{split}
+ & Max \ \  E_0[ \psi(\theta _0g_0)+ (1-\psi)ln(c_0)\\
+&+\beta(\psi(\theta _1g_1({B}^{1}_{0},{B}^{2}_{0}))+ (1-\psi)ln(c_1({B}^{1}_{0},{B}^{2}_{0})))\\
++ & \beta^2(\psi(\theta _2g_2\left ( B^{2}_{1}(({B}^{1}_{0},{B}^{2}_{0})) \right ))+ (1-\psi)ln(c_2\left ( B^{2}_{1}({B}^{1}_{0},{B}^{2}_{0}) \right )))]
+\end{split}
+\end{equation*}
+
+
+
+\bigskip
+
+Subject to
+
+\begin{center}
+
+$a.0) \ \  \eta=g_0+c_0  $
+
+\end{center}
+
+\bigskip
+
+\begin{equation*}
+b.0) \ \  \frac{c_0+\eta (1-\tau )}{c_0}+E_0\left[ \frac{c_1({B}^{1}_{0},{B}^{2}_{0})+\eta (1-\tau )}{c_1({B}^{1}_{0},{B}^{2}_{0})}+\frac{c_2( B^{2}_{1}({B}^{1}_{0},{B}^{2}_{0}))+\eta (1-\tau )}{c_2( B^{2}_{1}({B}^{1}_{0},{B}^{2}_{0}))} \right]=0
+\end{equation*}
+
+
+
+\bigskip
+
+Where the dependence of the controls on $ B^{2}_{1}({B}^{1}_{0},{B}^{2}_{0})$ comes from nesting the solutions obtained after solving the problem at $t=1,2$. The Table below shows the results of solving this problem for $\tau=0.1,\eta=1, \beta=1$, assuming that both states in $t=1$ has equal probability:
+
+\bigskip
+
+\begin{center}
+Table 1
+\end{center}
+
+\begin{table}[!htbp]
+\begin{tabular}{lccccccccc}
+\textbf{Parameters/Variables}    & \multicolumn{1}{l}{\textbf{$c_0$}} & \multicolumn{1}{l}{\textbf{$c_{1,h}$}} & \multicolumn{1}{l}{\textbf{$c{1,l}$}} & \multicolumn{1}{l}{\textbf{$c_{2,h}$}} & \multicolumn{1}{l}{\textbf{$c_{2,l}$}} & \multicolumn{1}{l}{\textbf{$b^{1}_{0}$}} & \multicolumn{1}{l}{\textbf{$b^{2}_{0}$}} & \multicolumn{1}{l}{\textbf{$b^{2}_{1,h}$}} & \multicolumn{1}{l}{\textbf{$b^{2}_{1,l}$}} \\
+\textbf{$\psi=0.5,\delta=0.1 (I)$}   & 0.63                              & 1.12                                    & 1.17                                    & 1.16                                    & 1.10                                    & 0.30                                                         & 0.18                                                         & 0.26                                                           & 0.20                                                           \\
+\textbf{$\psi=0.5,\delta=0.3 (II)$}  & 0.64                              & 1.00                                    & 1.01                                    & 1.22                                    & 1.00                                    & 0.00                                                         & 0.44                                                         & 0.32                                                           & 0.11                                                           \\
+\textbf{$\psi=1.0,\delta=0.1 (III)$} & 0.72                              & 1.01                                    & 1.01                                    & 1.05                                    & 1.02                                    & 0.13                                                         & 0.13                                                         & 0.15                                                           & 0.12                                                           \\
+\textbf{$\psi=1.0,\delta=0.3 (IV)$}  & 0.73                              & 0.97                                    & 1.07                                    & 1.07                                    & 0.98                                    & 0.10                                                         & 0.14                                                         & 0.17                                                           & 0.08
+\end{tabular}
+\end{table}
+
+
+\newpage
+
+\begin{center}
+Table 1 (Cont.)
+\end{center}
+
+
+\begin{table}[!htbp]
+\begin{tabular}{lcclllllll}
+\textbf{Parameters/Variables} & $q_0^1$  & $q_0^2$  & $g_0$   & $g_{1,h}$   & $g_{1,l}$   & $g_{2,h}$  & $g_{2,l}$  &$ q_{1,h}^{2}$ & $ q_{1,l}^{2}$\\
+$\psi=0.5,\delta=0.1 (I)$         & 0.55 & 0.56 & 0.37 & -0.12 & -0.17 & -0.16 & -0.1  & 0.97 & 1.06 \\
+$\psi=0.5,\delta=0.3 (II)$        & 0.55 & 0.58 & 0.36 & 0.00    & -0.01 & -0.22 & 0.00     & 0.82 & 1.01 \\
+$\psi=1.0,\delta=0.1 (III)$      & 0.71 & 0.70 & 0.28 & -0.01 & -0.01 & -0.05 & -0.02 & 0.96 & 0.99 \\
+$\psi=1.0,\delta=0.3 (IV)$        & 0.72 & 0.71 & 0.27 & 0.03  & -0.07 & -0.07 & 0.02  & 0.91 & 1.09
+\end{tabular}
+\end{table}
+
+
+\bigskip
+
+Table 1 contains the solutions for the problem with lack of commitment. The table below the difference between selected variables.
+
+\bigskip
+
+\begin{center}
+Table 2
+\end{center}
+
+\begin{table}[!htbp]
+\begin{tabular}{cccccccccccc}
+\multicolumn{1}{l}{\textbf{Par./Var.}} & $c_0$   & $c_{1,h}$   & $c_{1,l}$   & $c_{2,h}$  & $c_{2,l}$  & $b^{1}_{0}$   & $b^{2}_{0}$  & $b^{2}_{1,h}$ & $b^{2}_{1,l}$  & $q^{1}_{0}$  & $q^{2}_{0}$ \\
+II-I                                              & 0.01 & -0.12 & -0.16 & 0.06 & -0.10 & -0.30 & 0.26 & 0.06 & -0.09 & 0.00 & 0.02 \\
+IV - III                                          & 0.01 & -0.04 & 0.06  & 0.02 & -0.04 & -0.03 & 0.01 & 0.02 & -0.04 & 0.01 & 0.01
+\end{tabular}
+\end{table}
+
+
+\bigskip
+
+Equipped with tables 1 and 2 we can undestand the impact of an increase in uncertanty for different welfare weigths. Let's begin with the optimal level of $b^{2}_{1}$. Note that $b^{2}_{1,h}>b^{2}_{1,l}$ in table 1. This is so as utility is linear in expenditure and $\theta _{1,h}>\theta _{2,h}$. Thus, when the good state is realized, the Government issues more debt as an increase in $g _{1}$ (and a decrease in $g _{2}$) is wealfare improving. The reduction in $c _{1}$ is more than compensated as the shock affects only the instantaneous return on $g$ and  $c _{2}$ increases. Thus, an \textit{increase in the uncertainty generates a hike in $b^{2}_{1}$ }. This can be seen in table 2 (II-I in the  $b^{2}_{1,h}$ column). This implies an increase in $g_1$ (note that $c_{1,h}$ goes down in the II-I row of table 2).  Now in order to finance a higher level of expenditure, the Goverment must satisfy the budget constraint:
+
+\bigskip
+
+
+\begin{center}
+$g_1+b_0^1=\tau \eta +q_{1}^{2}\left [ b_{1}^{2}-b_{0}^{2} \right ]$
+\end{center}
+
+\bigskip
+
+As $q_{1}^{2}=c_{1,h}/c_{2,h}$, $q_{1}^{2}$ goes down after an increase in uncertainty (this can be verified in the $c_{1,h}$ and $c_{2,h}$ columns of row II-I in table2). Thus, the only way to finance this increase in expenditure without affecting taxes is by changing the maturity structure. In particular, \textit{increase in the uncertainty generates tilting} (i.e. a reduction in $b_{0}^{1}$  and an increase in $b_{0}^{2}$) so as to insure that $b_{1}^{2}<b_{0}^{2}$ and/or that $g_1+b_0^1$ goes down after a hike in $\delta$. This is verified in the $b_{0}^{1}$, $b_{0}^{2}$  columns of row II-I in table 2. Intuitively, after an increase in uncertainty, as expenditure goes up, amortizations and net issuance must goes down in order to insure the Goverment from the shock.
+
+\bigskip
+
+Note that when $\psi=1$ the hike in $g_{1,h}, b^2_{1,h} $ are smaller when compared with the $\psi=0.5$ as can be seen in the IV-III row of table 2, columns $c_{1,h}, b^2_{1,h} $. This is because the same increase in welfare can be achieved with a smaller hike in expenditure. This fact implies in turn that the maturity structure is almost flat as in the Debortoli's case (row III in table 1).
+
+\bigskip
+
+Note that the reduction in $c_0$ is small in both cases (see column $c_0$ in rows II-I and IV-III, table 2). This is because the increase in uncertainty almost does not affect $q^{1}_{0}$, $q^{2}_{0}$. This can be explained by the exante nature this prices (i.e. $q^{1}_{0}=c_0/E_0(c_1)$). The increase in $\delta$ affects positively the high state and negatively the low state, which both have the same probability. Thus, as preferences are $log$ for consumption, savings respond only to wealth effects (substitution and income effects are canceled). Thus, a minor increase in prices, barely stimulates savings. Thus, $\Delta \left ( q_0\cdot b_0 \right )\approx  0 \approx \Delta (q_0) \cdot b_0 \approx q_0 \cdot \Delta ( b_0)$, where the last term explains the tilting of maturity: as savings does not increase as prices does not change, the elements of $b_0=[b_0^1, b_0^2]$ must move in opposite directions. The Government budget constraint implies that the first element must go down and the second up, both with respect to the benchmark; which implies tilting.
+
+\bigskip
+
+In order to see the effects of a change in savings, we increase the value of $\theta_0$, keeping $\delta=0.3$ (high uncertainty) and $\psi=0.5$ (balanced welfare). The values of all endogeneous variables are available under request. We compare this economy with rows I and II of table 1. We found that tilting remains (i.e. $b_{0}^{1} <b_{0}^{2}$) but debt issuance increase with respect to the economies described in rows I and II. Of course, asset prices chance significantly so as to stimulate savings. Thus, \textit{an increase in current expenditure and a hike in uncertainty as in any Covid economy not only increase debt issuance but also generates a tilted maturity, all in order to insulate households from an increase in taxes}.The increase in savings can also be matched by recent US data as the balance of payments does not change significantly due to the syncrhonized economic cycles across Covid economies.
+
+\bigskip
+
+Finally, note that in table 1 there are some values of $g$ which are negative. This is possible of course, due to the quasi-linear assumption on preferences. As there are no income shocks, households insure themselves against preference shocks. They do so by saving (note that generally $b>0$). As uncertainty increases, so does the willingness to pay for insurance as can be seen in the $g_{2,h}$ column of table 1.
+
+
+
+
+%Bibliography with bibtex
+\bibliography{debtmat}
+\end{document}
