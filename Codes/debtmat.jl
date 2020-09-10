@@ -341,6 +341,5 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 
 		dist = max(dist_q, 10dist_v)
 
-		println()
 	end
 end

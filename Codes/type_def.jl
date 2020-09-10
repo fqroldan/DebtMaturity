@@ -72,6 +72,8 @@ function DebtMat(;
 	ρθ = 0.7,
 	σθ = 0.01,
 	τ = 0.3,
+	maxb = 0.6,
+	maxd = 0.6,
 	)
 
 	# ψ > 1-τ || throw(error("ψ too low, should be at least (1-τ) = $(1-τ)"))
@@ -82,8 +84,8 @@ function DebtMat(;
 	κ = ρ + r_star
 	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ, :τ=>τ)
 
-	bgrid = range(-0.2,0.4,length=Nb)
-	dgrid = range(-0.2,0.4,length=Nd)
+	bgrid = range(-0.2,maxb,length=Nb)
+	dgrid = range(-0.2,maxd,length=Nd)
 
 	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
 	θgrid = mc.state_values .+ 0.1*1.3

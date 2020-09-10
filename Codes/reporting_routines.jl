@@ -65,7 +65,8 @@ function makeplot_simul(dd::DebtMat, pp::Path; style::Style=slides_def)
 	yaxis1 = attr(domain = [0.76, 1]),
 	yaxis2 = attr(domain = [0.51, 0.74]),
 	yaxis3 = attr(domain = [0.26, 0.49]),
-	yaxis4 = attr(domain = [0, 0.24])
+	yaxis4 = attr(domain = [0, 0.24]),
+	xaxis = attr(anchor = "y4"),
 	)
 
 	plot(data, layout, style=style)
