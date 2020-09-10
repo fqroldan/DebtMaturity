@@ -1,4 +1,4 @@
-using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, LinearAlgebra, Printf
+using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, LinearAlgebra, Printf, Random
 
 using ORCA
 
@@ -14,8 +14,8 @@ function w(gc,γ)
 	# 	return w(gmin,γ) + (gc-gmin) * (gmin)^-γ
 	# end
 	if γ != 1
-		u = 1*gc
-		# u = (gc.^(1-γ))./(1-γ)
+		# u = 1*gc
+		u = (gc.^(1-γ))./(1-γ)
 	else
 		u = log.(gc)
 	end
@@ -73,7 +73,7 @@ R(B′,D′,D,qb,qd,ρ) = qb*B′ + qd*(D′-ρ*D)
 function iterate_q(dd::DebtMat, itp_U, itp_qd)
 	β = dd.pars[:β]
 	Jgrid = dd.grlong
-	
+
 	qd = similar(dd.agg[:qd])
 	qb = similar(dd.agg[:qb])
 
@@ -146,7 +146,7 @@ function budget_constraint(dd::DebtMat, cv, bpv, dpv, τv, state, pθ, itp_U, it
 	nv = 1 - cv * ( ψ / (1-τv) )^(1/γ)
 	# nv = max(1e-6, nv)
 	gv = resource_constraint_g(dd, cv, nv)
-	# gv = max(0, gv)
+	gv = max(0, gv)
 
 	Ucv = max(1e-6,cv)^(-γ)
 	qbv, qdv = debt_price(dd, bpv, dpv, pθ, itp_U, itp_qd, Ucv)
@@ -177,7 +177,7 @@ function eval_vf(dd::DebtMat, τv, bpv, dpv, state, pθ, itp_U, itp_qd, itp_v)
 	_, _, cv, nv, gv, qbv, qdv = budget_constraint(dd, cc, bpv, dpv, τv, state, pθ, itp_U, itp_qd)
 
 	ut = utility(dd, cc, nv) + θv * w(dd, gv)
-	
+
 	Eu = 0.0
 	for (jθp, θpv) in enumerate(dd.gr[:θ])
 		Eu += pθ[jθp] * itp_v(bpv, dpv, θpv)
@@ -199,7 +199,7 @@ n_FOC(dd::DebtMat, τv, cc) = (dd.pars[:ψ] / (1-τv))^(1/dd.pars[:γ]) * cc
 # 	nv = ψ * RHS^(1/(1-γ)) * cc
 # 	# nv = max(nv, cc+1e-2)
 
-	
+
 # 	τv = 1 - ψ * (cc / nv)^γ
 # 	# τv = max(0, min(1, τv))
 # 	# nv = max(0.1, min(nv, 0.9))
@@ -213,7 +213,7 @@ function debt_price(dd::DebtMat, bp, dp, pθ, itp_U, itp_qd, Ucv)
 	qb, qd = zeros(2)
 	for (jθp, θpv) in enumerate(dd.gr[:θ])
 		prob = pθ[jθp]
-		
+
 		qb += prob * itp_U(bp, dp, θpv)
 		qd += prob * itp_U(bp, dp, θpv) * (κ + (1-ρ) * itp_qd(bp, dp, θpv))
 	end
@@ -227,10 +227,10 @@ end
 function solve_opt_value(dd::DebtMat, guess::Dict{Symbol, Float64}, state::Dict{Symbol, Float64}, pθ, itp_U, itp_qd, itp_v)
 	bv, dv, θv = [state[sym] for sym in [:b, :d, :θ]]
 
+	τmin, τmax = 0.01, min(1,1-dd.pars[:ψ])
 	bmin, bmax = minimum(dd.gr[:b])+1e-4, maximum(dd.gr[:b])-1e-4
 	dmin, dmax = minimum(dd.gr[:d])+1e-4, maximum(dd.gr[:d])-1e-4
-	τmin, τmax = 0.01, min(1,1-dd.pars[:ψ])
-	
+
 	wrap_vf(x) = -eval_vf(dd, x[1], x[2], x[3], state, pθ, itp_U, itp_qd, itp_v)
 
 	res = Optim.optimize(wrap_vf, [τmin, bmin, dmin], [τmax, bmax, dmax], [guess[sym] for sym in [:τ, :b, :d]], Fminbox(NelderMead()))
@@ -259,7 +259,7 @@ function optim_step(dd::DebtMat, itp_U, itp_qd, itp_v)
 
 	for js in 1:size(Jgrid,1)
 		state = Dict(sym => dd.gr[sym][dd.grlong[sym][js]] for sym in [:b, :d, :θ])
-		
+
 		jθ = dd.grlong[:θ][js]
 		pθ = dd.P[jθ,:]
 
@@ -293,7 +293,7 @@ end
 
 function vfi!(dd::DebtMat; maxiter::Int64=250, tol=Float64=1e-6)
 	iter, dist = 0, 1+tol
-	
+
 	knots = (dd.gr[:b], dd.gr[:d], dd.gr[:θ]);
 	itp_qd = interpolate(knots, dd.agg[:qd], Gridded(Linear()));
 
@@ -322,11 +322,19 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 	while iter < maxiter && dist > tol
 		iter += 1
 		println("Outer iteration $iter")
-		old_qs = Dict(sym => copy(dd.agg[sym]) for sym in [:qd, :qb])
 
+		old_qs = Dict(sym => copy(dd.agg[sym]) for sym in [:qd, :qb])
+		
 		update_q!(dd)
 
 		dist_v = vfi!(dd, maxiter = 2)
+
+		update_q!(dd)
+
+		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1
+			dd.agg[:qb] = zeros(size(dd.agg[:qb]))
+			dd.agg[:qd] = zeros(size(dd.agg[:qd]))
+		end
 
 		dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
 		println("dist_q = $dist at ||q|| = $(norm(dd.agg[:qd]))")
@@ -336,4 +344,3 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 		println()
 	end
 end
-

@@ -49,7 +49,7 @@ function fill_path!(p::Path, t::Int64, d::Dict=Dict())
 			missing_keys += 1
 		end
 	end
-	
+
 	if missing_keys > 0
 		print("WARNING: $missing_keys missing keys")
 	end
@@ -58,7 +58,7 @@ end
 
 function trim_path(p::Path{T}, t0::Int64) where T
 	check_periods(p,t0)
-	
+
 	return Path{T-t0}(Dict(key => val[t0+1:end] for (key, val) in p.data))
 end
 
@@ -74,18 +74,19 @@ function DebtMat(;
 	τ = 0.3,
 	)
 
-	# ψ > 1-τ || throw(error("ψ too low, should be at least (1-τ) = $(1-τ)")) 
+	# ψ > 1-τ || throw(error("ψ too low, should be at least (1-τ) = $(1-τ)"))
 
 	r_star = 1/β - 1
-	ρ = 0.2 # Target average maturity of 7 years: ~0.05 at quarterly freq
+	# ρ = 0.2 # Target average maturity of 7 years: ~0.05 at quarterly freq
+	ρ = 0.0 # For a consol
 	κ = ρ + r_star
 	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ, :τ=>τ)
 
-	bgrid = range(-1.25,0.5,length=Nb)
-	dgrid = range(-1.25,0.5,length=Nd)
+	bgrid = range(-0.2,0.4,length=Nb)
+	dgrid = range(-0.2,0.4,length=Nd)
 
 	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
-	θgrid = mc.state_values .+ 1.3
+	θgrid = mc.state_values .+ 0.1*1.3
 	P = mc.p
 
 	gr = Dict(:b => bgrid, :d => dgrid, :θ => θgrid)
