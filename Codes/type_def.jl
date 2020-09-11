@@ -66,14 +66,14 @@ function DebtMat(;
 	β = 0.96,
 	γ = 0.9,
 	ψ = 1/3.3,
-	Nb = 6,
-	Nd = 6,
+	Nb = 12,
+	Nd = 12,
 	Nθ = 7,
 	ρθ = 0.7,
 	σθ = 0.01,
 	τ = 0.3,
-	maxb = 0.6,
-	maxd = 0.6,
+	maxb = 1.0,
+	maxd = 1.0,
 	)
 
 	# ψ > 1-τ || throw(error("ψ too low, should be at least (1-τ) = $(1-τ)"))
