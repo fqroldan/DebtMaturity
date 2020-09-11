@@ -1,4 +1,4 @@
-using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, LinearAlgebra, Printf, Random, JLD
+using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, LinearAlgebra, Printf, Random, JLD, Dates
 
 # using ORCA
 
@@ -310,7 +310,7 @@ function vfi!(dd::DebtMat; maxiter::Int64=250, tol=Float64=1e-6)
 		update_agg!(dd)
 
 		dist = sum( (old_v - dd.vf).^2 ) / sum( old_v.^2 )
-		println("dist_v = $dist at ‖v‖ = $(norm(old_v))")
+		println("dist_v = $(@sprintf("%.3g", dist)) at ‖v‖ = $(@sprintf("%.3g", norm(old_v)))")
 	end
 	return dist
 end
@@ -321,7 +321,7 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 	t0 = time()
 	while iter < maxiter && dist > tol
 		iter += 1
-		println("Outer iteration $iter")
+		print("\nOuter iteration $iter at $(Dates.format(now(), "HH:MM"))\n")
 
 		old_qs = Dict(sym => copy(dd.agg[sym]) for sym in [:qd, :qb])
 		
@@ -337,8 +337,11 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 		end
 
 		dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
-		println("dist_q = $dist at ‖q‖ = $(norm(dd.agg[:qd]))")
+		println("dist_q = $(@sprintf("%.3g", dist_q)) at ‖q‖ = $(@sprintf("%.3g", norm(dd.agg[:qd])))")
 
 		dist = max(dist_q, 10dist_v)
 	end
+	s = "Done in $(time_print(time()-t0))"
+	dist <= tol ? s *= " ✓" : s *= ". Failed to converge."
+	println(s)
 end
