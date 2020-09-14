@@ -339,7 +339,7 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 		dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
 		println("dist_q = $(@sprintf("%.3g", dist_q)) at ‖q‖ = $(@sprintf("%.3g", norm(dd.agg[:qd])))")
 
-		dist = max(dist_q, 10dist_v)
+		dist = max(dist_q, dist_v)
 	end
 	s = "Done in $(time_print(time()-t0))"
 	dist <= tol ? s *= " ✓" : s *= ". Failed to converge."
