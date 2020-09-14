@@ -6,7 +6,7 @@ function run_debtmat()
 
 	for (jβ, βv) in enumerate(βvec)
 
-		dd = Debtmat(β = βv)
+		dd = DebtMat(β = βv)
 
 		equil!(dd)
 
