@@ -7,10 +7,11 @@ function run_debtmat()
 	for (jβ, βv) in enumerate(βvec)
 
 		dd = DebtMat(β = βv)
-
+		write("../output.txt", "Created DebtMat with β = $βv")
 		equil!(dd)
-
+		write("../output.txt", "Solved DebtMat with β = $βv")
 		save("../Output/debtmat$(jj).jld", "dd", dd)
+		write("../output.txt", "Saved DebtMat with β = $βv")
 	end
 end
 
