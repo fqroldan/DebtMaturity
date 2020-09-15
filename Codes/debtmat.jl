@@ -332,8 +332,8 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 		update_q!(dd)
 
 		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1
-			dd.agg[:qb] = zeros(size(dd.agg[:qb]))
-			dd.agg[:qd] = zeros(size(dd.agg[:qd]))
+			dd.agg[:qb] = ones(size(dd.agg[:qb]))
+			dd.agg[:qd] = ones(size(dd.agg[:qd]))
 		end
 
 		dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
