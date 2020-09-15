@@ -331,7 +331,7 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 
 		update_q!(dd)
 
-		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1
+		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1 || max(maximum(dd.agg[:qb]), maximum(dd.agg[:qd])) > 1e10
 			dd.agg[:qb] = ones(size(dd.agg[:qb]))
 			dd.agg[:qd] = ones(size(dd.agg[:qd]))
 		end
