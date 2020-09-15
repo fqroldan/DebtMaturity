@@ -257,7 +257,7 @@ function optim_step(dd::DebtMat, itp_U, itp_qd, itp_v)
 	new_v = similar(dd.vf)
 	new_ϕ = Dict(key => similar(val) for (key,val) in dd.ϕ)
 
-	for js in 1:size(Jgrid,1)
+	Threads.@threads for js in 1:size(Jgrid,1)
 		state = Dict(sym => dd.gr[sym][dd.grlong[sym][js]] for sym in [:b, :d, :θ])
 
 		jθ = dd.grlong[:θ][js]
