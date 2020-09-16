@@ -346,5 +346,5 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 	end
 	s = "Done in $(time_print(time()-t0))"
 	dist <= tol ? s *= " ✓" : s *= ". Failed to converge."
-	println(s)
+	return dist <= tol
 end

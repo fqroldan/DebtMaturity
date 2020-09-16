@@ -11,11 +11,13 @@ function run_debtmat()
 		dd.pars[:β] = βv
 		write("../output.txt", "Created DebtMat with β = $βv")
 
-		equil!(dd)
-		write("../output.txt", "Solved DebtMat with β = $βv")
+		flag = equil!(dd)
+		write("../output.txt", "Solved DebtMat with β = $βv $(ifelse(flag, "✓","NO"))")
 
-		save("../Output/debtmat$(jβ).jld", "dd", dd)
-		write("../output.txt", "Saved DebtMat with β = $βv")
+		if flag
+			save("../Output/debtmat$(jβ).jld", "dd", dd)
+			write("../output.txt", "Saved DebtMat with β = $βv")
+		end
 	end
 end
 
