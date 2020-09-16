@@ -334,9 +334,12 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1 || max(maximum(dd.agg[:qb]), maximum(dd.agg[:qd])) > 1e10
 			dd.agg[:qb] = ones(size(dd.agg[:qb]))
 			dd.agg[:qd] = ones(size(dd.agg[:qd]))
+
+			dist_q = 1.0
+		else
+			dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
 		end
 
-		dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
 		println("dist_q = $(@sprintf("%.3g", dist_q)) at ‖q‖ = $(@sprintf("%.3g", norm(dd.agg[:qd])))")
 
 		dist = max(dist_q, dist_v)
