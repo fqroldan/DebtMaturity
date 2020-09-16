@@ -84,8 +84,8 @@ function DebtMat(;
 	κ = ρ + r_star
 	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ, :τ=>τ)
 
-	bgrid = range(-0.2,maxb,length=Nb)
-	dgrid = range(-0.2,maxd,length=Nd)
+	bgrid = range(-0.4,maxb,length=Nb)
+	dgrid = range(-0.4,maxd,length=Nd)
 
 	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
 	θgrid = mc.state_values .+ 0.1*1.3
