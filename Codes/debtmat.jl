@@ -309,7 +309,7 @@ function vfi!(dd::DebtMat; maxiter::Int64=250, tol=Float64=1e-6)
 
 		update_agg!(dd)
 
-		dist = sum( (old_v - dd.vf).^2 ) / sum( old_v.^2 )
+		dist = norm( old_v - dd.vf ) / max(1, norm( old_v ))
 		println("dist_v = $(@sprintf("%.3g", dist)) at ‖v‖ = $(@sprintf("%.3g", norm(old_v)))")
 	end
 	return dist
@@ -337,7 +337,7 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 
 			dist_q = 1.0
 		else
-			dist_q = maximum([sum((old_qs[key] - dd.agg[key]).^2) / sum( old_qs[key].^2 ) for key in keys(old_qs)])
+			dist_q = maximum([norm(old_qs[key] - dd.agg[key]) / norm( old_qs[key] ) for key in keys(old_qs)])
 		end
 
 		println("dist_q = $(@sprintf("%.3g", dist_q)) at ‖q‖ = $(@sprintf("%.3g", norm(dd.agg[:qd])))")
