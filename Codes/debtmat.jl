@@ -146,7 +146,7 @@ function budget_constraint(dd::DebtMat, cv, bpv, dpv, τv, state, pθ, itp_U, it
 	nv = 1 - cv * ( ψ / (1-τv) )^(1/γ)
 	# nv = max(1e-6, nv)
 	gv = resource_constraint_g(dd, cv, nv)
-	gv = max(0, gv)
+	gv = max(1e-6, gv)
 
 	Ucv = max(1e-6,cv)^(-γ)
 	qbv, qdv = debt_price(dd, bpv, dpv, pθ, itp_U, itp_qd, Ucv)
@@ -331,7 +331,7 @@ function equil!(dd::DebtMat; maxiter::Int64=250, tol::Float64=1e-4)
 
 		update_q!(dd)
 
-		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1 || max(maximum(dd.agg[:qb]), maximum(dd.agg[:qd])) > 1e10
+		if maximum(isnan.(dd.agg[:qb])) == 1 || maximum(isnan.(dd.agg[:qd])) == 1 #|| max(maximum(dd.agg[:qb]), maximum(dd.agg[:qd])) > 1e10
 			dd.agg[:qb] = ones(size(dd.agg[:qb]))
 			dd.agg[:qd] = ones(size(dd.agg[:qd]))
 
