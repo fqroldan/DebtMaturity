@@ -88,7 +88,7 @@ function DebtMat(;
 	dgrid = range(-0.4,maxd,length=Nd)
 
 	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
-	θgrid = mc.state_values .+ 0.4
+	θgrid = mc.state_values .+ 0.2
 	P = mc.p
 
 	gr = Dict(:b => bgrid, :d => dgrid, :θ => θgrid)

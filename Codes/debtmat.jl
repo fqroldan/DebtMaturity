@@ -25,8 +25,8 @@ end
 utility(dd::DebtMat,cc,nn) = utility(cc,nn,dd.pars[:γ],dd.pars[:ψ])
 function utility(cc, nn, γ, ψ)
 	u = 0.0
-	cmin = 1e-8
-	Lmin = 1e-8
+	cmin = 1e-3
+	Lmin = 1e-3
 
 	L = 1 - nn
 
@@ -70,12 +70,9 @@ R(dd::DebtMat, B′,D′,D,qb,qd) = R(B′,D′,D,qb,qd,dd.pars[:ρ])
 R(B′,D′,D,qb,qd,ρ) = qb*B′ + qd*(D′-ρ*D)
 
 
-function iterate_q(dd::DebtMat, itp_U, itp_qd)
+function iterate_q!(qd, qb, dd::DebtMat, itp_U, itp_qd)
 	β = dd.pars[:β]
 	Jgrid = dd.grlong
-
-	qd = similar(dd.agg[:qd])
-	qb = similar(dd.agg[:qb])
 
 	for js in 1:size(dd.grlong[:b],1)
 		jθ = first([dd.grlong[sym][js] for sym in [:θ]])
@@ -101,29 +98,29 @@ function iterate_q(dd::DebtMat, itp_U, itp_qd)
 		qd[js] = β * Eqd / uc1
 		qb[js] = β * Eqb / uc1
 	end
-
-	return qd, qb
 end
 
 function update_q!(dd::DebtMat; maxiter::Int64=2500, tol::Float64=1e-8, verbose::Bool=false)
 	knots = (dd.gr[:b], dd.gr[:d], dd.gr[:θ])
 	itp_U = interpolate(knots, dd.agg[:Uc], Gridded(Linear()))
 
+	qd = similar(dd.agg[:qd])
+	qb = similar(dd.agg[:qb])
+
 	iter, dist = 0, 1+tol
 	t0 = time()
 	while iter < maxiter && dist > tol
 		iter += 1
 
-		old_q = copy(dd.agg[:qd])
-		itp_qd = interpolate(knots, old_q, Gridded(Linear()))
+		itp_qd = interpolate(knots, dd.agg[:qd], Gridded(Linear()))
 
-		dd.agg[:qd], dd.agg[:qb] = iterate_q(dd, itp_U, itp_qd)
+		iterate_q!(qd, qb, dd, itp_U, itp_qd)
 
-		dist = sum( (old_q - dd.agg[:qd]).^2 ) / sum( old_q.^2 )
+		dist = norm( qd - dd.agg[:qd] ) / (1+norm(dd.agg[:qd]))
+
+		dd.agg[:qd] = 1*qd
+		dd.agg[:qb] = 1*qb
 	end
-
-	# dd.agg[:Qd] = dd.agg[:Uc] .* dd.agg[:qd]
-	# dd.agg[:Qb] = dd.agg[:Uc] .* dd.agg[:qb]
 
 	message = "Done in $iter iterations ($(time_print(time()-t0)))"
 	if dist < tol
@@ -233,7 +230,7 @@ function solve_opt_value(dd::DebtMat, guess::Dict{Symbol, Float64}, state::Dict{
 
 	wrap_vf(x) = -eval_vf(dd, x[1], x[2], x[3], state, pθ, itp_U, itp_qd, itp_v)
 
-	res = Optim.optimize(wrap_vf, [τmin, bmin, dmin], [τmax, bmax, dmax], [guess[sym] for sym in [:τ, :b, :d]], Fminbox(NelderMead()))
+	res = Optim.optimize(wrap_vf, [τmin, bmin, dmin], [τmax, bmax, dmax], [guess[sym] for sym in [:τ, :b, :d]], Fminbox(ConjugateGradient()))
 
 	if Optim.converged(res)
 	else
@@ -252,7 +249,7 @@ function solve_opt_value(dd::DebtMat, guess::Dict{Symbol, Float64}, state::Dict{
 end
 
 function optim_step(dd::DebtMat, itp_U, itp_qd, itp_v)
-	Jgrid = gridmake(1:dd.pars[:Nb], 1:dd.pars[:Nd], 1:dd.pars[:Nθ])
+	Jgrid = gridmake(1:dd.pars[:Nb], 1:dd.pars[:Nd], 1:dd.pars[:Nθ]);
 
 	new_v = similar(dd.vf)
 	new_ϕ = Dict(key => similar(val) for (key,val) in dd.ϕ)
