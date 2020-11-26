@@ -1,4 +1,4 @@
-using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, LinearAlgebra, Printf, Random, JLD, Dates
+using QuantEcon, Interpolations, Optim, PlotlyJS, ColorSchemes, ForwardDiff, LinearAlgebra, Printf, Random, JLD, Dates, ProgressBars
 
 # using ORCA
 
@@ -9,10 +9,10 @@ include("simul.jl")
 w(dd::DebtMat, gc) = w(gc,dd.pars[:γ])
 function w(gc,γ)
 	u = 0.0
-	gmin = 1e-8
-	# if gc < gmin
-	# 	return w(gmin,γ) + (gc-gmin) * (gmin)^-γ
-	# end
+	gmin = 1e-3
+	if gc < gmin
+		return w(gmin,γ) + (gc-gmin) * (gmin)^-γ
+	end
 	if γ != 1
 		# u = 1*gc
 		u = (gc.^(1-γ))./(1-γ)
@@ -167,7 +167,7 @@ function eval_vf(dd::DebtMat, τv, bpv, dpv, state, pθ, itp_U, itp_qd, itp_v)
 
 	max_c = 1.0
 
-	res = Optim.optimize(cv -> budget_surplus(dd, cv, bpv, dpv, τv, state, pθ, itp_U, itp_qd)^2, 0, max_c)
+	res = Optim.optimize(cv -> budget_surplus(dd, cv, bpv, dpv, τv, state, pθ, itp_U, itp_qd)^2, 0, max_c, GoldenSection())
 
 	cc = res.minimizer
 
@@ -224,7 +224,7 @@ end
 function solve_opt_value(dd::DebtMat, guess::Dict{Symbol, Float64}, state::Dict{Symbol, Float64}, pθ, itp_U, itp_qd, itp_v)
 	bv, dv, θv = [state[sym] for sym in [:b, :d, :θ]]
 
-	τmin, τmax = 0.01, min(1,1-dd.pars[:ψ])
+	τmin, τmax = 0.015, min(1,1-dd.pars[:ψ])
 	bmin, bmax = minimum(dd.gr[:b])+1e-4, maximum(dd.gr[:b])-1e-4
 	dmin, dmax = minimum(dd.gr[:d])+1e-4, maximum(dd.gr[:d])-1e-4
 
@@ -248,13 +248,11 @@ function solve_opt_value(dd::DebtMat, guess::Dict{Symbol, Float64}, state::Dict{
 	return ϕv, vf
 end
 
-function optim_step(dd::DebtMat, itp_U, itp_qd, itp_v)
+function optim_step!(new_v, new_ϕ, dd::DebtMat, itp_U, itp_qd, itp_v)
 	Jgrid = gridmake(1:dd.pars[:Nb], 1:dd.pars[:Nd], 1:dd.pars[:Nθ]);
 
-	new_v = similar(dd.vf)
-	new_ϕ = Dict(key => similar(val) for (key,val) in dd.ϕ)
-
-	Threads.@threads for js in 1:size(Jgrid,1)
+	# Threads.@threads for js in 1:size(Jgrid,1)
+	for js in ProgressBar(1:size(Jgrid,1))
 		state = Dict(sym => dd.gr[sym][dd.grlong[sym][js]] for sym in [:b, :d, :θ])
 
 		jθ = dd.grlong[:θ][js]
@@ -268,7 +266,6 @@ function optim_step(dd::DebtMat, itp_U, itp_qd, itp_v)
 		end
 		new_v[js] = vv
 	end
-	return new_v, new_ϕ
 end
 
 function vfi_iter(dd::DebtMat, itp_qd)
@@ -276,7 +273,10 @@ function vfi_iter(dd::DebtMat, itp_qd)
 	itp_v = interpolate(knots, dd.vf, Gridded(Linear()));
 	itp_U = interpolate(knots, dd.agg[:Uc], Gridded(Linear()));
 
-	new_v, new_ϕ = optim_step(dd, itp_U, itp_qd, itp_v)
+	new_v = similar(dd.vf);
+	new_ϕ = Dict(key => similar(val) for (key,val) in dd.ϕ);
+
+	optim_step!(new_v, new_ϕ, dd, itp_U, itp_qd, itp_v)
 
 	return new_v, new_ϕ
 end
