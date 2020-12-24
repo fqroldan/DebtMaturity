@@ -65,14 +65,13 @@ end
 function DebtMat(;
 	β = 0.96,
 	γ = 1,
-	ψ = 1/3.3,
+	ψ = 3.3,
 	Nb = 17,
 	Nd = 17,
 	Nθ = 3,
 	ρθ = 0.7,
-	σθ = 0.01,
-	τ = 0.3,
-	maxb = 1.2,
+	σθ = 0.1,
+	maxb = 1.25,
 	maxd = 1.2,
 	)
 
@@ -82,13 +81,13 @@ function DebtMat(;
 	# ρ = 0.2 # Target average maturity of 7 years: ~0.05 at quarterly freq
 	ρ = 0.0 # For a consol
 	κ = ρ + r_star
-	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ, :τ=>τ)
+	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ)
 
 	bgrid = range(-0.4,maxb,length=Nb)
 	dgrid = range(-0.4,maxd,length=Nd)
 
 	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
-	θgrid = mc.state_values .+ 0.2
+	θgrid = mc.state_values .+ 0.3
 	P = mc.p
 
 	gr = Dict(:b => bgrid, :d => dgrid, :θ => θgrid)
