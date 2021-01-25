@@ -69,10 +69,10 @@ function DebtMat(;
 	Nb = 17,
 	Nd = 17,
 	Nθ = 3,
-	ρθ = 0.7,
-	σθ = 0.1,
+	ρθ = 0.8,
+	σθ = 0.05,
 	maxb = 1.25,
-	maxd = 1.2,
+	maxd = 1.4,
 	)
 
 	# ψ > 1-τ || throw(error("ψ too low, should be at least (1-τ) = $(1-τ)"))
@@ -83,11 +83,13 @@ function DebtMat(;
 	κ = ρ + r_star
 	pars = Dict(:β=>β, :γ=>γ, :ψ=>ψ, :Nb=>Nb, :Nd=>Nd, :Nθ=>Nθ, :κ=>κ, :ρ=>ρ)
 
-	bgrid = range(-0.4,maxb,length=Nb)
-	dgrid = range(-0.4,maxd,length=Nd)
+	# bgrid = range(-0.4,maxb,length=Nb)
+	# dgrid = range(-0.4,maxd,length=Nd)
+	bgrid = range(0,maxb,length=Nb)
+	dgrid = range(0,maxd,length=Nd)
 
 	mc = tauchen(Nθ, ρθ, σθ, 0, 1)
-	θgrid = mc.state_values .+ 0.3
+	θgrid = mc.state_values .+ 0.1
 	P = mc.p
 
 	gr = Dict(:b => bgrid, :d => dgrid, :θ => θgrid)
@@ -98,7 +100,7 @@ function DebtMat(;
 		:θ=>[Jgrid[js,3] for js in 1:size(Jgrid,1)],
 	)
 
-	agg = Dict([sym => ones(Nb, Nd, Nθ)*mean(bgrid) for sym in [:b′, :d′, :Uc, :qb, :qd]])
+	agg = Dict([sym => ones(Nb, Nd, Nθ) for sym in [:b′, :d′, :Uc, :qb, :qd]])
 
 	ϕ = Dict([sym => ones(Nb, Nd, Nθ)*0.2 for sym in [:c, :n, :b, :d, :τ, :g]])
 	vf = zeros(Nb, Nd, Nθ)

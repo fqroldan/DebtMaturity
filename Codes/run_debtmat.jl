@@ -1,4 +1,4 @@
-include("debtmat.jl")
+include("logdebtmat.jl")
 
 function run_debtmat()
 
@@ -21,5 +21,4 @@ function run_debtmat()
 	end
 end
 
-
-run_debtmat()
+# run_debtmat()
